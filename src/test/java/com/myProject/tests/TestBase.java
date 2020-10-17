@@ -1,11 +1,11 @@
 package com.myProject.tests;
 
-import com.aventstack.extentreports.ExtentReports;
-import com.aventstack.extentreports.ExtentTest;
-import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.myProject.utilities.BrowserUtils;
 import com.myProject.utilities.ConfigurationReader;
 import com.myProject.utilities.Driver;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -19,15 +19,14 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class TestBase {
-
     protected WebDriver driver;
     protected Actions actions;
     protected WebDriverWait wait;
-    protected static ExtentReports report;
-
-    protected static ExtentHtmlReporter htmlReporter;
-
-    protected static ExtentTest extentLogger;
+    protected ExtentReports report;
+    //this class is used to create HTML report file
+    protected ExtentHtmlReporter htmlReporter;
+    //this will  define a test, enables adding logs, authors, test steps
+    protected ExtentTest extentLogger;
 
     @BeforeTest
     public void setUpTest(){
@@ -45,12 +44,12 @@ public class TestBase {
         report.attachReporter(htmlReporter);
 
         //title in report
-        htmlReporter.config().setReportName("Vytrack Smoke Test");
+        htmlReporter.config().setReportName("NextBaseCrm Smoke Test");
 
         //set environment information
         report.setSystemInfo("Environment","QA");
         report.setSystemInfo("Browser", ConfigurationReader.get("browser"));
-        report.setSystemInfo("OS", System.getProperty("os.name"));
+        report.setSystemInfo("OS",System.getProperty("os.name"));
 
     }
 
@@ -62,21 +61,26 @@ public class TestBase {
         actions = new Actions(driver);
         wait = new WebDriverWait(driver,10);
         driver.get(ConfigurationReader.get("url"));
-    }
 
+    }
+    //ITestResult class describes the result of a test in TestNG
     @AfterMethod
     public void tearDown(ITestResult result) throws InterruptedException, IOException {
         //if test fails
         if(result.getStatus()==ITestResult.FAILURE){
+            //record the name of failed test case
             extentLogger.fail(result.getName());
 
+            //take the screenshot and return location of screenshot
             String screenShotPath = BrowserUtils.getScreenshot(result.getName());
+
+            //add your screenshot to your report
             extentLogger.addScreenCaptureFromPath(screenShotPath);
 
+            //capture the exception and put inside the report
             extentLogger.fail(result.getThrowable());
 
         }
-
         Thread.sleep(2000);
         Driver.closeDriver();
     }
@@ -85,5 +89,9 @@ public class TestBase {
     public void tearDownTest(){
         //this is when the report is actually created
         report.flush();
+
     }
+
+
+
 }
