@@ -13,7 +13,6 @@ public class LoginTest extends TestBase {
         LoginPage loginPage = new LoginPage();
         loginPage.login(ConfigurationReader.get("username"),ConfigurationReader.get("password"));
 
-        //Useyd was here!
 
     }
 }
